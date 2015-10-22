@@ -1,0 +1,24 @@
+{
+  "name": "nicklewis/mapping",
+  "type": "library",
+  "description": "This is a way of providing a mappable interface to specific parts of your code for the purpose of reports / integrations",
+  "keywords": [
+    "mapping"
+  ],
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Nicholas Lewis",
+      "email": "nickle799@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "bullhorn/fast-rest": "dev-master"
+  },
+  "autoload": {
+    "psr-0": {
+      "NickLewis\\Mapping": "Library/"
+    }
+  }
+}
