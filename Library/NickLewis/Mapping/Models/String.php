@@ -1,0 +1,43 @@
+<?php
+namespace NickLewis\Mapping\Models;
+use NickLewis\Mapping\Services\Method;
+
+class String extends Root implements StringInterface {
+	/** @type  string */
+	private $value;
+
+	/**
+	 * String constructor.
+	 * @param string $value
+	 */
+	public function __construct($value) {
+		$this->setValue($value);
+	}
+
+
+	/**
+	 * __toString
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->getValue();
+	}
+
+	/**
+	 * Getter
+	 * @return string
+	 */
+	public function getValue() {
+		return $this->value;
+	}
+
+	/**
+	 * Setter
+	 * @param string $value
+	 */
+	private function setValue($value) {
+		$this->value = $value;
+	}
+
+
+}

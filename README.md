@@ -17,9 +17,6 @@ This is a way of providing a mappable interface to specific parts of your code f
 * As you can see, these parsings can be nested
 * If there is more than one parameter, there should be a comma in between (spaces are optional)
     * eg: computer.room.relatedRoom("below", "2") will get you the room two floors below
-* Parenthesis can be added in pairs (open and closing) at any point to add order of operations
-    * Inside parenthesis will always be parsed first, and the output will be passed to the outer option
-    * eg: ("5").add("6") will actually parse the value of 5, then add 6 to it
 
 ## Built in Methods
 ### These methods are always available (Provided they apply to the given current data)
