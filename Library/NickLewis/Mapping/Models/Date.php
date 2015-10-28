@@ -1,13 +1,16 @@
 <?php
 namespace NickLewis\Mapping\Models;
 
-class String extends Root implements StringInterface {
-	/** @type  string */
+
+use Bullhorn\FastRest\Api\Services\Date\Date as OriginalDate;
+
+class Date extends Root implements StringInterface {
+	/** @type  OriginalDate */
 	private $value;
 
 	/**
 	 * String constructor.
-	 * @param string $value
+	 * @param OriginalDate $value
 	 */
 	public function __construct($value) {
 		$this->setValue($value);
@@ -19,12 +22,12 @@ class String extends Root implements StringInterface {
 	 * @return string
 	 */
 	public function __toString() {
-		return (string)$this->getValue();
+		return $this->getValue()->__toString();
 	}
 
 	/**
 	 * Getter
-	 * @return string
+	 * @return OriginalDate
 	 */
 	public function getValue() {
 		return $this->value;
@@ -32,9 +35,9 @@ class String extends Root implements StringInterface {
 
 	/**
 	 * Setter
-	 * @param string $value
+	 * @param OriginalDate $value
 	 */
-	private function setValue($value) {
+	private function setValue(OriginalDate $value) {
 		$this->value = $value;
 	}
 

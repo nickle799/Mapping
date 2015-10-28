@@ -1,13 +1,13 @@
 <?php
 namespace NickLewis\Mapping\Models;
 
-class String extends Root implements StringInterface {
-	/** @type  string */
+class Number extends Root implements StringInterface {
+	/** @type  number */
 	private $value;
 
 	/**
 	 * String constructor.
-	 * @param string $value
+	 * @param number $value
 	 */
 	public function __construct($value) {
 		$this->setValue($value);
@@ -24,7 +24,7 @@ class String extends Root implements StringInterface {
 
 	/**
 	 * Getter
-	 * @return string
+	 * @return number
 	 */
 	public function getValue() {
 		return $this->value;
@@ -32,7 +32,7 @@ class String extends Root implements StringInterface {
 
 	/**
 	 * Setter
-	 * @param string $value
+	 * @param number $value
 	 */
 	private function setValue($value) {
 		$this->value = $value;
