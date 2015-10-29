@@ -1,6 +1,8 @@
 <?php
 namespace NickLewis\Mapping\Services;
 use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
+use NickLewis\Mapping\Models\Date;
+use NickLewis\Mapping\Models\Number;
 use NickLewis\Mapping\Models\ObjectInterface;
 use NickLewis\Mapping\Models\String;
 use NickLewis\Mapping\Models\StringInterface;
@@ -223,14 +225,20 @@ class Parse {
 			$validMappings[] = $mappableField->getName();
 			if($mappableField->getName()==$currentMapping) {
 				$returnVar = $mappableField->handle($parameters);
-				if($mappableField->getReturnType()==Method::RETURN_STRING) {
+				if(is_object($returnVar) && $returnVar instanceof ObjectInterface) {
+					return $returnVar;
+				} elseif($mappableField->getReturnType()==Method::RETURN_STRING || is_null($returnVar)) {
 					return new String($returnVar);
+				} elseif(in_array($mappableField->getReturnType(), [Method::RETURN_DOUBLE, Method::RETURN_INT])) {
+					return new Number($returnVar);
+				} elseif(in_array($mappableField->getReturnType(), [Method::RETURN_DATE, Method::RETURN_DATETIME])) {
+					return new Date($returnVar);
 				} else {
-					throw new \Exception('To Implement');
+					throw new \Exception('To Implement: '.$mappableField->getReturnType());
 				}
 			}
 		}
-		$this->throwMappingException('Could not find a method with the name of: '.$currentMapping, $rawMapping, $index);
+		$this->throwMappingException('Could not find a method with the name of: '.$currentMapping.' valid options are: '.implode("\n", $validMappings), $rawMapping, $index);
 	}
 
 	/**

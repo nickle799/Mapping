@@ -1,6 +1,8 @@
 <?php
 namespace NickLewis\Mapping\Services;
 
+use NickLewis\Mapping\Models\ObjectInterface;
+
 class Method {
 	const RETURN_INT = 'int';
 	const RETURN_BOOLEAN = 'boolean';
@@ -204,8 +206,8 @@ class Method {
 			if(!class_exists($class)) {
 				throw new \Exception('Invalid Return Type: '.$returnType);
 			}
-			if(!in_array(__NAMESPACE__.'\ObjectInterface', class_implements($class))) {
-				throw new \Exception('Invalid Return Type: '.$returnType.', does not implement Object Interface');
+			if(!(in_array(ObjectInterface::class, class_implements($class)))) {
+				throw new \Exception('Invalid Return Type: '.$returnType.', does not implement Object Interface: '.$class);
 			}
 			$this->setReturnTypeMappable(true);
 		}
