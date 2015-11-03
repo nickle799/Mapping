@@ -1,7 +1,8 @@
 <?php
 namespace NickLewis\Mapping\Models;
+use NickLewis\Mapping\Models\BuiltInMethods\String as BuiltInString;
+use NickLewis\Mapping\Models\BuiltInMethods\Number as BuiltInNumber;
 use NickLewis\Mapping\Services\Method;
-use NickLewis\Mapping\Services\Parameter;
 
 abstract class Root implements ObjectInterface {
 	/**
@@ -9,31 +10,23 @@ abstract class Root implements ObjectInterface {
 	 * @return Method[]
 	 */
 	private function getStringMethods() {
-		$returnVar = [];
 		if(!($this instanceof StringInterface)) {
-			return $returnVar;
+			return [];
 		}
-		/** @type Root $this */
-		$method = new Method();
-		$method->setName('date');
-		$method->setReturnType(Method::RETURN_STRING);
-		$parameter = new Parameter();
-		$parameter->setAllowedType(Method::RETURN_STRING);
-		$parameter->setDescription('The format for the date (see http://php.net/manual/en/function.date.php)');
-		$method->addParameter($parameter);
-		$method->setHandler([$this, 'mappableDate']);
-		$returnVar[] = $method;
-		return $returnVar;
+		$string = new BuiltInString($this);
+		return $string->addMethods();
 	}
 
 	/**
-	 * mappableDate
-	 * @param $format
-	 * @return string
+	 * getNumberMethods
+	 * @return Method[]
 	 */
-	public function mappableDate($format) {
-		/** @type StringInterface $this */
-		return date($format, strtotime($this->__toString()));
+	private function getNumberMethods() {
+		if(!($this instanceof NumberInterface)) {
+			return [];
+		}
+		$string = new BuiltInNumber($this);
+		return $string->addMethods();
 	}
 
 	/**
@@ -43,8 +36,10 @@ abstract class Root implements ObjectInterface {
 	 * @return Method[]
 	 */
 	public function getMappableFields() {
-		$returnVar = [];
-		$returnVar = array_merge($returnVar, $this->getStringMethods());
+		$returnVar = array_merge(
+			$this->getStringMethods(),
+			$this->getNumberMethods()
+		);
 		return $returnVar;
 	}
 

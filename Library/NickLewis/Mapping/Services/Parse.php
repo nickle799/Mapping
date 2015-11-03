@@ -122,11 +122,15 @@ class Parse {
 			}
 			if($inQuote) {
 				if($char=='"') {
-					if(!$atEnd && ($until==self::UNTIL_END || $nextChar!=')') && $nextChar!='+' && $nextChar!='.') {
-						$this->throwMappingException('A closing quote "\"" must either be followed by the end of the mapping, a closing parenthesis, a plus, or a .', $mapping, $i);
+					if(!($atEnd || $nextChar=='+' || $nextChar=='.' || ($until==self::UNTIL_CLOSING_COMMA_OR_CLOSING_PARENTHESIS && ($nextChar==')' || $nextChar==',')))) {
+						$this->throwMappingException('A closing quote "\"" must either be followed by the end of the mapping, a closing parenthesis, a plus, a "," or a .', $mapping, $i);
 					}
 					$inQuote = false;
-					$currentObject = new String($currentMapping);
+					if(is_numeric($currentMapping)) {
+						$currentObject = new Number($currentMapping);
+					} else {
+						$currentObject = new String($currentMapping);
+					}
 					$currentMapping = '';
 					continue;
 				}
@@ -145,6 +149,9 @@ class Parse {
 				$parameters = [];
 				$i++; //Offset for opening parenthesis
 				$subMapping = substr($mapping, $i);
+				if($subMapping=='') {
+					$this->throwMappingException('There are more opening parenthesis than closing parenthesis', $mapping, $i);
+				}
 				while(strlen($subMapping)>0) {
 					$parse = new Parse($currentObject);
 					$parameter = $parse->parseInternal($subMapping, self::UNTIL_CLOSING_COMMA_OR_CLOSING_PARENTHESIS);

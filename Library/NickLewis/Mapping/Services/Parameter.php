@@ -1,5 +1,6 @@
 <?php
 namespace NickLewis\Mapping\Services;
+use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
 use Bullhorn\FastRest\Api\Services\Date\Date;
 use Bullhorn\FastRest\Api\Services\Date\DateTime;
 
@@ -82,13 +83,13 @@ class Parameter extends Root {
 	public function validate($value) {
 		switch($this->getAllowedType()) {
 			case Method::RETURN_BOOLEAN:
-				$value = $this->getSanitize()->cleanBool($value);
+				$value = Assert::isBool($value);
 				break;
 			case Method::RETURN_DOUBLE:
-				$value = $this->getSanitize()->cleanFloat($value);
+				$value = Assert::isFloat($value);
 				break;
 			case Method::RETURN_INT:
-				$value = $this->getSanitize()->cleanInt($value);
+				$value = Assert::isInt($value);
 				break;
 			case Method::RETURN_DATE:
 				$value = new Date($value);

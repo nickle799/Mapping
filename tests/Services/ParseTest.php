@@ -43,10 +43,19 @@ class ParseTest extends Root {
 	}
 
 	/**
+	 * testParse_validEscape
+	 * @return void
+	 */
+	public function testParse_validEscape() {
+		$actual = $this->runMapping('"hello\"goodbye"');
+		$this->assertEquals('hello"goodbye', $actual);
+	}
+
+	/**
 	 * testParse_closingQuoteNotAtEnd
 	 * @return void
 	 * @expectedException \NickLewis\Mapping\Services\CatchableException
-	 * @expectedExceptionMessage Invalid Mapping: A closing quote "\"" must either be followed by the end of the mapping, a closing parenthesis, or a plus
+	 * @expectedExceptionMessage Invalid Mapping: A closing quote "\"" must either be followed by the end of the mapping, a closing parenthesis, a plus, a "," or a .
 	 */
 	public function testParse_closingQuoteNotAtEnd() {
 		$this->runMapping('""d');
@@ -79,6 +88,16 @@ class ParseTest extends Root {
 	 * @expectedExceptionMessage Invalid Mapping: There are more opening parenthesis than closing parenthesis
 	 */
 	public function testParse_moreOpeningThanClosingParenthesis() {
+		$this->runMapping('(adf');
+	}
+
+	/**
+	 * testParse_moreOpeningThanClosingParenthesisOnlyOpenParenthesis
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Invalid Mapping: There are more opening parenthesis than closing parenthesis
+	 */
+	public function testParse_moreOpeningThanClosingParenthesisOnlyOpenParenthesis() {
 		$this->runMapping('(');
 	}
 
@@ -118,6 +137,54 @@ class ParseTest extends Root {
 	 */
 	public function testParse_arbitraryComma() {
 		$this->runMapping(',');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The offset from the beginning of the string.  If it is negative, it will be offset from the end of the string)
+	 */
+	public function testSubString_noParameters() {
+		$this->runMapping('"hello".substring()');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testSubString_onlyStart() {
+		$actual = $this->runMapping('"hello".substring("2")');
+		$this->assertEquals($actual, 'llo');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testSubString_startAndLength() {
+		$actual = $this->runMapping('"hello".substring("2","2")');
+		$this->assertEquals($actual, 'll');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The parameter to add to)
+	 */
+	public function testAdd_noParameters() {
+		$actual = $this->runMapping('"1.5".add()');
+		$this->assertEquals($actual, '4.2');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testAdd_valid() {
+		$actual = $this->runMapping('"1.5".add("2.7")');
+		$this->assertEquals($actual, '4.2');
 	}
 
 }

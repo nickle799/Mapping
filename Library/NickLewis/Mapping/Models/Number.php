@@ -1,7 +1,9 @@
 <?php
 namespace NickLewis\Mapping\Models;
 
-class Number extends Root implements StringInterface {
+use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
+
+class Number extends Root implements NumberInterface {
 	/** @type  number */
 	private $value;
 
@@ -10,6 +12,7 @@ class Number extends Root implements StringInterface {
 	 * @param number $value
 	 */
 	public function __construct($value) {
+		$value = Assert::isFloat($value);
 		$this->setValue($value);
 	}
 
