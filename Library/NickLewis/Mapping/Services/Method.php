@@ -1,6 +1,7 @@
 <?php
 namespace NickLewis\Mapping\Services;
 
+use InvalidArgumentException;
 use NickLewis\Mapping\Models\ObjectInterface;
 
 class Method {
@@ -21,12 +22,33 @@ class Method {
 	private $description;
 	/** @var  bool */
 	private $returnTypeMappable = false;
-	/** @var Parameter[]  */
+	/** @var ParameterInterface[]  */
 	private $parameters = [];
+	/** @type bool  */
+	private $hasParameterGrouping = false;
 
 	/**
 	 * Getter
-	 * @return Parameter[]
+	 * @return boolean
+	 */
+	private function isHasParameterGrouping() {
+		return $this->hasParameterGrouping;
+	}
+
+	/**
+	 * Setter
+	 * @param boolean $hasParameterGrouping
+	 * @return Method
+	 */
+	private function setHasParameterGrouping($hasParameterGrouping) {
+		$this->hasParameterGrouping = $hasParameterGrouping;
+		return $this;
+	}
+
+
+	/**
+	 * Getter
+	 * @return ParameterInterface[]
 	 */
 	public function getParameters() {
 		return $this->parameters;
@@ -34,7 +56,7 @@ class Method {
 
 	/**
 	 * Setter
-	 * @param Parameter[] $parameters
+	 * @param ParameterInterface[] $parameters
 	 */
 	private function setParameters(array $parameters) {
 		$this->parameters = $parameters;
@@ -43,11 +65,17 @@ class Method {
 	/**
 	 * addParameter
 	 *
-	 * @param Parameter $parameter
+	 * @param ParameterInterface $parameter
 	 *
 	 * @return void
 	 */
-	public function addParameter(Parameter $parameter) {
+	public function addParameter(ParameterInterface $parameter) {
+		if($this->isHasParameterGrouping()) {
+			throw new InvalidArgumentException('You cannot add a parameter after you have added a parameterGrouping');
+		}
+		if($parameter instanceof ParameterGrouping) {
+			$this->setHasParameterGrouping(true);
+		}
 		$parameters = $this->getParameters();
 		$parameters[] = $parameter;
 		$this->setParameters($parameters);
@@ -102,16 +130,31 @@ class Method {
 	 * @throws CatchableException
 	 */
 	private function validateParameters(array $parameters=[]) {
-		if(sizeOf($this->getParameters())<sizeOf($parameters)) {
-			throw new CatchableException('Too many parameters passed in'."\n".$this->__toString());
-		}
 
-		foreach($this->getParameters() as $key=>$mappingParameter) {
-			if(array_key_exists($key, $parameters)) {
-				$parameters[$key] = $mappingParameter->validate($parameters[$key]);
-			} elseif ($mappingParameter->isRequired()) {
-				throw new CatchableException('Missing Required Parameter ('.$mappingParameter->getDescription().')'."\n".$this->__toString());
+		$currentParamKey = 0;
+		foreach($this->getParameters() as $mappingParameter) {
+			if($mappingParameter instanceof ParameterGrouping) {
+				while($currentParamKey<sizeOf($parameters)) {
+					foreach ($mappingParameter->getParameters() as $subMappingParameter) {
+						if (array_key_exists($currentParamKey, $parameters)) {
+							$parameters[$currentParamKey] = $subMappingParameter->validate($parameters[$currentParamKey]);
+						} elseif ($subMappingParameter->isRequired()) {
+							throw new CatchableException('Missing Required Parameter (' . $subMappingParameter->getDescription() . ')' . "\n" . $this->__toString());
+						}
+						$currentParamKey++;
+					}
+				}
+			} elseif($mappingParameter instanceof Parameter) {
+				if (array_key_exists($currentParamKey, $parameters)) {
+					$parameters[$currentParamKey] = $mappingParameter->validate($parameters[$currentParamKey]);
+				} elseif ($mappingParameter->isRequired()) {
+					throw new CatchableException('Missing Required Parameter (' . $mappingParameter->getDescription() . ')' . "\n" . $this->__toString());
+				}
 			}
+			$currentParamKey++;
+		}
+		if($currentParamKey<sizeOf($parameters)) {
+			throw new CatchableException('Too many parameters passed in'."\n".$this->__toString());
 		}
 		return $parameters;
 	}

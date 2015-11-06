@@ -174,8 +174,7 @@ class ParseTest extends Root {
 	 * @expectedExceptionMessage Missing Required Parameter (The parameter to add to)
 	 */
 	public function testAdd_noParameters() {
-		$actual = $this->runMapping('"1.5".add()');
-		$this->assertEquals($actual, '4.2');
+		$this->runMapping('"1.5".add()');
 	}
 
 	/**
@@ -184,7 +183,44 @@ class ParseTest extends Root {
 	 */
 	public function testAdd_valid() {
 		$actual = $this->runMapping('"1.5".add("2.7")');
-		$this->assertEquals($actual, '4.2');
+		$this->assertEquals($actual->getValue(), 4.2);
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The parameter to subtract)
+	 */
+	public function testSubtract_noParameters() {
+		$this->runMapping('"1.5".subtract()');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testSubtract_valid() {
+		$actual = $this->runMapping('"1.5".subtract("2.7")');
+		$this->assertEquals($actual->getValue(), -1.2);
+	}
+
+	/**
+	 * testIn_threeParamsNoMapping
+	 * @return void
+	 */
+	public function testIn_threeParamsNoMapping() {
+		$actual = $this->runMapping('"hello".in("abc","abd","abe")');
+		$this->assertSame($actual->getValue(), false);
+	}
+
+	/**
+	 * testIn_valid
+	 * @return void
+	 */
+	public function testIn_valid() {
+		$actual = $this->runMapping('"hello".in("abc","abd","abe","hello")');
+		$this->assertSame($actual->getValue(), true);
 	}
 
 }

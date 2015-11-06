@@ -4,7 +4,7 @@ use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
 use Bullhorn\FastRest\Api\Services\Date\Date;
 use Bullhorn\FastRest\Api\Services\Date\DateTime;
 
-class Parameter extends Root {
+class Parameter extends Root implements ParameterInterface {
 	/** @var bool  */
 	private $required = true;
 	/** @var string  */

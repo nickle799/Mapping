@@ -3,6 +3,7 @@ namespace NickLewis\Mapping\Models\BuiltInMethods;
 use NickLewis\Mapping\Models\StringInterface;
 use NickLewis\Mapping\Services\Method;
 use NickLewis\Mapping\Services\Parameter;
+use NickLewis\Mapping\Services\ParameterGrouping;
 
 class String {
 	/** @type  StringInterface */
@@ -23,10 +24,48 @@ class String {
 	public function addMethods() {
 		return [
 			$this->addDate(),
-			$this->addSubString()
+			$this->addSubString(),
+			$this->addIn()
 		];
 	}
 
+	/**
+	 * addIfThen
+	 * @return Method
+	 * @throws \Exception
+	 */
+	private function addIn() {
+		$method = new Method();
+		$method->setName('in');
+		$method->setDescription('Returns true if the current value is in any of the parameters');
+		$method->setReturnType(Method::RETURN_BOOLEAN);
+
+		$parameterGrouping = new ParameterGrouping();
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('A string to check against');
+		$parameterGrouping->addParameter($parameter);
+
+		$method->addParameter($parameterGrouping);
+
+		$method->setHandler([$this, 'mappableIn']);
+		return $method;
+	}
+
+	/**
+	 * mappableIn
+	 * @return bool
+	 */
+	public function mappableIn() {
+		$arguments = func_get_args();
+		return in_array($this->getModel()->__toString(), $arguments);
+	}
+
+	/**
+	 * addSubString
+	 * @return Method
+	 * @throws \Exception
+	 */
 	private function addSubString() {
 		$method = new Method();
 		$method->setName('substring');

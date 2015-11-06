@@ -22,12 +22,13 @@ class Number {
 	 */
 	public function addMethods() {
 		return [
-			$this->addAdd()
+			$this->addAdd(),
+			$this->addSubtract()
 		];
 	}
 
 	/**
-	 * addDate
+	 * addAdd
 	 * @return Method
 	 */
 	private function addAdd() {
@@ -52,6 +53,34 @@ class Number {
 	 */
 	public function mappableAdd($number) {
 		return $this->getModel()->getValue()+$number;
+	}
+
+	/**
+	 * addSubtract
+	 * @return Method
+	 */
+	private function addSubtract() {
+		$method = new Method();
+		$method->setName('subtract');
+		$method->setDescription('Subtracts two numbers');
+		$method->setReturnType(Method::RETURN_DOUBLE);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The parameter to subtract');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableSubtract']);
+		return $method;
+	}
+
+	/**
+	 * mappableSubtract
+	 * @param number $number
+	 * @return number
+	 */
+	public function mappableSubtract($number) {
+		return $this->getModel()->getValue()-$number;
 	}
 
 	/**

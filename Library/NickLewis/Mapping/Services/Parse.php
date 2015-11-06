@@ -1,6 +1,7 @@
 <?php
 namespace NickLewis\Mapping\Services;
 use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
+use NickLewis\Mapping\Models\Boolean;
 use NickLewis\Mapping\Models\Date;
 use NickLewis\Mapping\Models\Number;
 use NickLewis\Mapping\Models\ObjectInterface;
@@ -240,6 +241,8 @@ class Parse {
 					return new Number($returnVar);
 				} elseif(in_array($mappableField->getReturnType(), [Method::RETURN_DATE, Method::RETURN_DATETIME])) {
 					return new Date($returnVar);
+				} elseif($mappableField->getReturnType()==Method::RETURN_BOOLEAN) {
+					return new Boolean($returnVar);
 				} else {
 					throw new \Exception('To Implement: '.$mappableField->getReturnType());
 				}
