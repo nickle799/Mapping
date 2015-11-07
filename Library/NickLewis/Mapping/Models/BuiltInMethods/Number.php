@@ -23,7 +23,12 @@ class Number {
 	public function addMethods() {
 		return [
 			$this->addAdd(),
-			$this->addSubtract()
+			$this->addSubtract(),
+			$this->addMultiply(),
+			$this->addDivide(),
+			$this->addRound(),
+			$this->addGreaterThan(),
+			$this->addLessThan()
 		];
 	}
 
@@ -84,6 +89,147 @@ class Number {
 	}
 
 	/**
+	 * addGreaterThan
+	 * @return Method
+	 */
+	private function addGreaterThan() {
+		$method = new Method();
+		$method->setName('greaterThan');
+		$method->setDescription('Checks if the current value is greater than the passed in value');
+		$method->setReturnType(Method::RETURN_BOOLEAN);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The parameter to check against');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableGreaterThan']);
+		return $method;
+	}
+
+	/**
+	 * mappableGreaterThan
+	 * @param number $number
+	 * @return number
+	 */
+	public function mappableGreaterThan($number) {
+		return $this->getModel()->getValue()>$number;
+	}
+
+	/**
+	 * addLessThan
+	 * @return Method
+	 */
+	private function addLessThan() {
+		$method = new Method();
+		$method->setName('lessThan');
+		$method->setDescription('Checks if the current value is less than the passed in value');
+		$method->setReturnType(Method::RETURN_BOOLEAN);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The parameter to check against');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableLessThan']);
+		return $method;
+	}
+
+	/**
+	 * mappableLessThan
+	 * @param number $number
+	 * @return number
+	 */
+	public function mappableLessThan($number) {
+		return $this->getModel()->getValue()<$number;
+	}
+
+	/**
+	 * addMultiply
+	 * @return Method
+	 */
+	private function addMultiply() {
+		$method = new Method();
+		$method->setName('multiply');
+		$method->setDescription('Multiplies two numbers');
+		$method->setReturnType(Method::RETURN_DOUBLE);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The parameter to multiply');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableMultiply']);
+		return $method;
+	}
+
+	/**
+	 * mappableMultiply
+	 * @param number $number
+	 * @return number
+	 */
+	public function mappableMultiply($number) {
+		return $this->getModel()->getValue()*$number;
+	}
+
+	/**
+	 * addDivide
+	 * @return Method
+	 */
+	private function addDivide() {
+		$method = new Method();
+		$method->setName('divide');
+		$method->setDescription('Divides two numbers');
+		$method->setReturnType(Method::RETURN_DOUBLE);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The parameter to divide');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableDivide']);
+		return $method;
+	}
+
+	/**
+	 * mappableDivide
+	 * @param number $number
+	 * @return number
+	 */
+	public function mappableDivide($number) {
+		return round($this->getModel()->getValue()/$number, 6);
+	}
+
+	/**
+	 * addRound
+	 * @return Method
+	 */
+	private function addRound() {
+		$method = new Method();
+		$method->setName('round');
+		$method->setDescription('Rounds two numbers');
+		$method->setReturnType(Method::RETURN_DOUBLE);
+
+		$parameter = new Parameter();
+		$parameter->setRequired(false);
+		$parameter->setAllowedType(Method::RETURN_DOUBLE);
+		$parameter->setDescription('The Precision to round by');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableRound']);
+		return $method;
+	}
+
+	/**
+	 * mappableRound
+	 * @param int $precision
+	 * @return float
+	 */
+	public function mappableRound($precision=0) {
+		return round($this->getModel()->getValue(), $precision);
+	}
+
+	/**
 	 * @return NumberInterface
 	 */
 	public function getModel() {
@@ -94,7 +240,7 @@ class Number {
 	 * @param NumberInterface $model
 	 * @return String
 	 */
-	public function setModel($model) {
+	public function setModel(NumberInterface $model) {
 		$this->model = $model;
 		return $this;
 	}

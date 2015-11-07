@@ -1,6 +1,7 @@
 <?php
 namespace NickLewis\Mapping\Models\BuiltInMethods;
 use NickLewis\Mapping\Models\StringInterface;
+use NickLewis\Mapping\Services\CatchableException;
 use NickLewis\Mapping\Services\Method;
 use NickLewis\Mapping\Services\Parameter;
 use NickLewis\Mapping\Services\ParameterGrouping;
@@ -25,7 +26,12 @@ class String {
 		return [
 			$this->addDate(),
 			$this->addSubString(),
-			$this->addIn()
+			$this->addIn(),
+			$this->addToLowerCase(),
+			$this->addToUpperCase(),
+			$this->addTrim(),
+			$this->addLeftFill(),
+			$this->addRightFill()
 		];
 	}
 
@@ -102,6 +108,52 @@ class String {
 	}
 
 	/**
+	 * addToLowerCase
+	 * @return Method
+	 * @throws \Exception
+	 */
+	private function addToLowerCase() {
+		$method = new Method();
+		$method->setName('toLowerCase');
+		$method->setDescription('Makes the string all lowercase');
+		$method->setReturnType(Method::RETURN_STRING);
+
+		$method->setHandler([$this, 'mappableToLowerCase']);
+		return $method;
+	}
+	
+	/**
+	 * mappableToLowerCase
+	 * @return string
+	 */
+	public function mappableToLowerCase() {
+		return strtolower($this->getModel()->__toString());
+	}
+
+	/**
+	 * addToUpperCase
+	 * @return Method
+	 * @throws \Exception
+	 */
+	private function addToUpperCase() {
+		$method = new Method();
+		$method->setName('toUpperCase');
+		$method->setDescription('Makes the string all uppercase');
+		$method->setReturnType(Method::RETURN_STRING);
+
+		$method->setHandler([$this, 'mappableToUpperCase']);
+		return $method;
+	}
+	
+	/**
+	 * mappableToUpperCase
+	 * @return string
+	 */
+	public function mappableToUpperCase() {
+		return strtoupper($this->getModel()->__toString());
+	}
+
+	/**
 	 * addDate
 	 * @return Method
 	 */
@@ -128,6 +180,115 @@ class String {
 	}
 
 	/**
+	 * addTrim
+	 * @return Method
+	 */
+	private function addTrim() {
+		$method = new Method();
+		$method->setName('trim');
+		$method->setDescription('Trims empty spaces from either end of a string');
+		$method->setReturnType(Method::RETURN_STRING);
+		$parameter = new Parameter();
+		$parameter->setRequired(false);
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('The specific characters to trim.  It is whitespace by default');
+		$method->addParameter($parameter);
+		$method->setHandler([$this, 'mappableTrim']);
+		return $method;
+	}
+
+	/**
+	 * mappableTrim
+	 * @param string $characters
+	 * @return string
+	 */
+	public function mappableTrim($characters=null) {
+		if(is_null($characters)) {
+			return trim($this->getModel()->__toString());
+		} else {
+			return trim($this->getModel()->__toString(), $characters);
+		}
+	}
+
+	/**
+	 * addTrim
+	 * @return Method
+	 */
+	private function addLeftFill() {
+		$method = new Method();
+		$method->setName('leftFill');
+		$method->setDescription('This adds characters to the left side of the string');
+		$method->setReturnType(Method::RETURN_STRING);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_INT);
+		$parameter->setDescription('The length to fill the string to');
+		$method->addParameter($parameter);
+
+		$parameter = new Parameter();
+		$parameter->setRequired(false);
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('The string to fill it with.  Defaults to 0');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableLeftFill']);
+		return $method;
+	}
+	
+	/**
+	 * mappableLeftFill
+	 * @param int    $length
+	 * @param string $fillString
+	 * @return string
+	 * @throws CatchableException
+	 */
+	public function mappableLeftFill($length, $fillString='0') {
+		if(strlen($fillString)=='') {
+			throw new CatchableException('Fill String Cannot be empty');
+		}
+		return str_pad($this->getModel()->__toString(), $length, $fillString, STR_PAD_LEFT);
+	}
+
+	/**
+	 * addTrim
+	 * @return Method
+	 */
+	private function addRightFill() {
+		$method = new Method();
+		$method->setName('rightFill');
+		$method->setDescription('This adds characters to the right side of the string');
+		$method->setReturnType(Method::RETURN_STRING);
+
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_INT);
+		$parameter->setDescription('The length to fill the string to');
+		$method->addParameter($parameter);
+
+		$parameter = new Parameter();
+		$parameter->setRequired(false);
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('The string to fill it with.  Defaults to " "');
+		$method->addParameter($parameter);
+
+		$method->setHandler([$this, 'mappableRightFill']);
+		return $method;
+	}
+	
+	/**
+	 * mappableRightFill
+	 * @param int    $length
+	 * @param string $fillString
+	 * @return string
+	 * @throws CatchableException
+	 */
+	public function mappableRightFill($length, $fillString=' ') {
+		if(strlen($fillString)=='') {
+			throw new CatchableException('Fill String Cannot be empty');
+		}
+		return str_pad($this->getModel()->__toString(), $length, $fillString, STR_PAD_RIGHT);
+	}
+
+	/**
 	 * @return StringInterface
 	 */
 	public function getModel() {
@@ -138,7 +299,7 @@ class String {
 	 * @param StringInterface $model
 	 * @return String
 	 */
-	public function setModel($model) {
+	public function setModel(StringInterface $model) {
 		$this->model = $model;
 		return $this;
 	}

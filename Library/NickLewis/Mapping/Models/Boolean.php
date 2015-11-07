@@ -3,7 +3,7 @@ namespace NickLewis\Mapping\Models;
 
 use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
 
-class Boolean extends Root implements NumberInterface {
+class Boolean extends Root implements BooleanInterface {
 	/** @type  bool */
 	private $value;
 

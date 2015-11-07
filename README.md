@@ -70,6 +70,37 @@ This is a way of providing a mappable interface to specific parts of your code f
     * Parameters
         * value (Required)
     * Compares against the passed in value, and returns if the current one is greaterThan or not
+* substring("5", "6")
+    * Parameters
+        * start (Required)
+        * length (Optional)
+    * See http://php.net/manual/en/function.substr.php
+    * Values can be negative
+* trim(" ")
+    * Parameters
+        * characterMask (Optional)
+    * See http://php.net/manual/en/function.trim.php
+* round("2")
+    * Parameters
+        * precision (Optional) Defaults to 0
+* leftFill("5", "0")
+     * Parameters
+        * length (Required) The length to fill the string to
+        * fill (Required) The padding string
+    * This adds characters to the left side of the string
+* rightFill("5", " ")
+     * Parameters
+        * length (Required) The length to fill the string to
+        * fill (Required) The padding string
+    * This adds characters to the right side of the string
+* in("a", "b")
+    * Parameters
+        * comparison (Required) 
+        * There must be at least one
+    * Returns a boolean that can then be piped into .ifThen
+
+## TODO
+
 * count()
     * Parameters (None)
     * Returns the size of an array if the current object is an array
@@ -84,31 +115,3 @@ This is a way of providing a mappable interface to specific parts of your code f
         * This only works if you are inside a method
     * eg: computer.room.computers.itemAt(subObject().length().minus("1"))
         * This will get you the last computer in the array of computers in the current room
-* substring("5", "6")
-    * Parameters
-        * start (Required)
-        * length (Optional)
-    * See http://php.net/manual/en/function.substr.php
-    * Values can be negative
-* trim(" ")
-    * Parameters
-        * characterMask (Optional)
-    * See http://php.net/manual/en/function.trim.php
-* round("2")
-    * Parameters
-        * precision (Optional) Defaults to 0
-* lfill("5", "0")
-     * Parameters
-        * length (Required) The length to fill the string to
-        * fill (Required) The padding string
-    * This adds characters to the left side of the string
-* rfill("5", " ")
-     * Parameters
-        * length (Required) The length to fill the string to
-        * fill (Required) The padding string
-    * This adds characters to the right side of the string
-* in("a", "b")
-    * Parameters
-        * comparison (Required) 
-        * There must be at least one
-    * Returns a boolean that can then be piped into .ifThen

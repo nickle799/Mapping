@@ -155,7 +155,7 @@ class ParseTest extends Root {
 	 */
 	public function testSubString_onlyStart() {
 		$actual = $this->runMapping('"hello".substring("2")');
-		$this->assertEquals($actual, 'llo');
+		$this->assertEquals('llo', $actual);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class ParseTest extends Root {
 	 */
 	public function testSubString_startAndLength() {
 		$actual = $this->runMapping('"hello".substring("2","2")');
-		$this->assertEquals($actual, 'll');
+		$this->assertEquals('ll', $actual);
 	}
 
 	/**
@@ -183,7 +183,7 @@ class ParseTest extends Root {
 	 */
 	public function testAdd_valid() {
 		$actual = $this->runMapping('"1.5".add("2.7")');
-		$this->assertEquals($actual->getValue(), 4.2);
+		$this->assertEquals(4.2, $actual->getValue());
 	}
 
 	/**
@@ -202,7 +202,63 @@ class ParseTest extends Root {
 	 */
 	public function testSubtract_valid() {
 		$actual = $this->runMapping('"1.5".subtract("2.7")');
-		$this->assertEquals($actual->getValue(), -1.2);
+		$this->assertEquals(-1.2, $actual->getValue());
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The parameter to multiply)
+	 */
+	public function testMultiply_noParameters() {
+		$this->runMapping('"1.5".multiply()');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testMultiply_valid() {
+		$actual = $this->runMapping('"1.5".multiply("2.7")');
+		$this->assertEquals(4.05, $actual->getValue());
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The parameter to divide)
+	 */
+	public function testDivide_noParameters() {
+		$this->runMapping('"1.5".divide()');
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testDivide_valid() {
+		$actual = $this->runMapping('"1.5".divide("2.7")');
+		$this->assertEquals(0.555556, $actual->getValue());
+	}
+
+	/**
+	 * testSubString_noParameters
+	 * @return void
+	 */
+	public function testRound_noParameters() {
+		$actual = $this->runMapping('"1.5".round()');
+		$this->assertEquals(2, $actual->getValue());
+	}
+
+	/**
+	 * testRound_withParameter
+	 * @return void
+	 */
+	public function testRound_withParameter() {
+		$actual = $this->runMapping('"1.23152".round("2")');
+		$this->assertEquals(1.23, $actual->getValue());
 	}
 
 	/**
@@ -211,7 +267,7 @@ class ParseTest extends Root {
 	 */
 	public function testIn_threeParamsNoMapping() {
 		$actual = $this->runMapping('"hello".in("abc","abd","abe")');
-		$this->assertSame($actual->getValue(), false);
+		$this->assertSame(false, $actual->getValue());
 	}
 
 	/**
@@ -220,7 +276,194 @@ class ParseTest extends Root {
 	 */
 	public function testIn_valid() {
 		$actual = $this->runMapping('"hello".in("abc","abd","abe","hello")');
-		$this->assertSame($actual->getValue(), true);
+		$this->assertSame(true, $actual->getValue());
+	}
+
+	/**
+	 * testIn_valid
+	 * @return void
+	 */
+	public function testIfThen_true() {
+		$actual = $this->runMapping('"hello".in("hello").ifThen("itIsTrue")');
+		$this->assertSame("itIsTrue", $actual->__toString());
+	}
+
+	/**
+	 * testIn_valid
+	 * @return void
+	 */
+	public function testIfThen_false() {
+		$actual = $this->runMapping('"hello".in("helloWorld").ifThen("itIsTrue","itIsFalse")');
+		$this->assertSame("itIsFalse", $actual->__toString());
+	}
+
+	/**
+	 * testToLowerCase
+	 * @return void
+	 */
+	public function testToLowerCase() {
+		$actual = $this->runMapping('"HeLlo".toLowerCase()');
+		$this->assertSame("hello", $actual->__toString());
+	}
+
+	/**
+	 * testToUpperCase
+	 * @return void
+	 */
+	public function testToUpperCase() {
+		$actual = $this->runMapping('"HeLlo".toUpperCase()');
+		$this->assertSame("HELLO", $actual->__toString());
+	}
+
+	/**
+	 * testTrim_noParams
+	 * @return void
+	 */
+	public function testTrim_noParams() {
+		$actual = $this->runMapping('" hello
+		 ".trim()');
+		$this->assertSame("hello", $actual->__toString());
+	}
+
+	/**
+	 * testTrim_noParams
+	 * @return void
+	 */
+	public function testTrim_parameter() {
+		$actual = $this->runMapping('"hello".trim("ho")');
+		$this->assertSame("ell", $actual->__toString());
+	}
+
+	/**
+	 * testLeftFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The length to fill the string to)
+	 */
+	public function testLeftFill_noParameters() {
+		$this->runMapping('"hello".leftFill()');
+	}
+
+	/**
+	 * testLeftFill_noParameters
+	 * @return void
+	 */
+	public function testLeftFill_onlyLength() {
+		$actual = $this->runMapping('"hello".leftFill("10")');
+		$this->assertSame("00000hello", $actual->__toString());
+	}
+
+	/**
+	 * testLeftFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: leftFill (Offset: 25) with full mapping "hello".leftFill("10","")
+	 */
+	public function testLeftFill_emptyFillString() {
+		$this->runMapping('"hello".leftFill("10","")');
+	}
+
+	/**
+	 * testLeftFill_noParameters
+	 * @return void
+	 */
+	public function testLeftFill_validFillString() {
+		$actual = $this->runMapping('"hello".leftFill("10","ab")');
+		$this->assertSame("ababahello", $actual->__toString());
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Missing Required Parameter (The length to fill the string to)
+	 */
+	public function testRightFill_noParameters() {
+		$this->runMapping('"hello".rightFill()');
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 */
+	public function testRightFill_onlyLength() {
+		$actual = $this->runMapping('"hello".rightFill("10")');
+		$this->assertSame("hello     ", $actual->__toString());
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: rightFill (Offset: 26) with full mapping "hello".rightFill("10","")
+	 */
+	public function testRightFill_emptyFillString() {
+		$this->runMapping('"hello".rightFill("10","")');
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 */
+	public function testRightFill_validFillString() {
+		$actual = $this->runMapping('"hello".rightFill("10","ab")');
+		$this->assertSame("helloababa", $actual->__toString());
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Invalid Mapping: Missing Required Parameter (The parameter to check against)
+	 */
+	public function testGreaterThan_noParameters() {
+		$this->runMapping('"5".greaterThan()');
+	}
+
+	/**
+	 * testGreaterThan_true
+	 * @return void
+	 */
+	public function testGreaterThan_true() {
+		$actual = $this->runMapping('"5.3".greaterThan("-3.5")');
+		$this->assertSame(true, $actual->getValue());
+	}
+
+	/**
+	 * testGreaterThan_false
+	 * @return void
+	 */
+	public function testGreaterThan_false() {
+		$actual = $this->runMapping('"-5.3".greaterThan("-3.5")');
+		$this->assertSame(false, $actual->getValue());
+	}
+
+	/**
+	 * testRightFill_noParameters
+	 * @return void
+	 * @expectedException \NickLewis\Mapping\Services\CatchableException
+	 * @expectedExceptionMessage Invalid Mapping: Missing Required Parameter (The parameter to check against)
+	 */
+	public function testLessThan_noParameters() {
+		$this->runMapping('"5".lessThan()');
+	}
+
+	/**
+	 * testLessThan_true
+	 * @return void
+	 */
+	public function testLessThan_true() {
+		$actual = $this->runMapping('"-5.3".lessThan("-3.5")');
+		$this->assertSame(true, $actual->getValue());
+	}
+
+	/**
+	 * testLessThan_false
+	 * @return void
+	 */
+	public function testLessThan_false() {
+		$actual = $this->runMapping('"5.3".lessThan("-3.5")');
+		$this->assertSame(false, $actual->getValue());
 	}
 
 }

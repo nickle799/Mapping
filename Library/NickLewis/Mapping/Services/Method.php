@@ -11,6 +11,7 @@ class Method {
 	const RETURN_STRING = 'string';
 	const RETURN_DATE = 'date';
 	const RETURN_DATETIME = 'datetime';
+	const RETURN_MIXED = 'mixed';
 
 	/** @var  string */
 	private $name;
@@ -244,7 +245,7 @@ class Method {
 		} else {
 			$compareReturnType = $returnType;
 		}
-		if(!in_array($compareReturnType, array(self::RETURN_BOOLEAN, self::RETURN_DOUBLE, self::RETURN_INT, self::RETURN_STRING, self::RETURN_DATE, self::RETURN_DATETIME))) {
+		if(!in_array($compareReturnType, array(self::RETURN_BOOLEAN, self::RETURN_DOUBLE, self::RETURN_INT, self::RETURN_STRING, self::RETURN_DATE, self::RETURN_DATETIME, self::RETURN_MIXED))) {
 			$class = $compareReturnType;
 			if(!class_exists($class)) {
 				throw new \Exception('Invalid Return Type: '.$returnType);

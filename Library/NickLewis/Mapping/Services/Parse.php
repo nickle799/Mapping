@@ -232,7 +232,11 @@ class Parse {
 		foreach($mappableFields as $mappableField) {
 			$validMappings[] = $mappableField->getName();
 			if($mappableField->getName()==$currentMapping) {
-				$returnVar = $mappableField->handle($parameters);
+				try {
+					$returnVar = $mappableField->handle($parameters);
+				} catch(CatchableException $e) {
+					$this->throwMappingException($e->getMessage(), $currentMapping, $index);
+				}
 				if(is_object($returnVar) && $returnVar instanceof ObjectInterface) {
 					return $returnVar;
 				} elseif($mappableField->getReturnType()==Method::RETURN_STRING || is_null($returnVar)) {

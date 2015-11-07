@@ -107,7 +107,7 @@ class Parameter extends Root implements ParameterInterface {
 	 * @throws \Exception
 	 */
 	public function setAllowedType($allowedType) {
-		if(!in_array($allowedType, [Method::RETURN_BOOLEAN, Method::RETURN_DOUBLE, Method::RETURN_INT, Method::RETURN_STRING, Method::RETURN_DATE, Method::RETURN_DATETIME])) {
+		if(!in_array($allowedType, [Method::RETURN_BOOLEAN, Method::RETURN_DOUBLE, Method::RETURN_INT, Method::RETURN_STRING, Method::RETURN_DATE, Method::RETURN_DATETIME, Method::RETURN_MIXED])) {
 			if(!class_exists($allowedType)) {
 				throw new \Exception('Invalid Allowed Type: '.$allowedType);
 			}
