@@ -466,4 +466,40 @@ class ParseTest extends Root {
 		$this->assertSame(false, $actual->getValue());
 	}
 
+	/**
+	 * testMap_exactMatch
+	 * @return void
+	 */
+	public function testMap_exactMatch() {
+		$actual = $this->runMapping('"hello world".map("*","sweet","hello world","goodbye")');
+		$this->assertEquals('goodbye', $actual->__toString());
+	}
+
+	/**
+	 * testMap_noMatch
+	 * @return void
+	 */
+	public function testMap_noMatch() {
+		$actual = $this->runMapping('"hello world".map("help world","goodbye")');
+		$this->assertEquals('hello world', $actual->__toString());
+	}
+
+	/**
+	 * testMap_noMatch
+	 * @return void
+	 */
+	public function testMap_wildCard() {
+		$actual = $this->runMapping('"hello world".map("*","sweet","help world","goodbye")');
+		$this->assertEquals('sweet', $actual->__toString());
+	}
+
+	/**
+	 * testMap_noMatch
+	 * @return void
+	 */
+	public function testMap_wildPartOfString() {
+		$actual = $this->runMapping('"hello world".map("*","sweet","*el* wor*","goodbye")');
+		$this->assertEquals('goodbye', $actual->__toString());
+	}
+
 }

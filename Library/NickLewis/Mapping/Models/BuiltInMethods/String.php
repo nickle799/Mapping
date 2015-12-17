@@ -31,8 +31,68 @@ class String {
 			$this->addToUpperCase(),
 			$this->addTrim(),
 			$this->addLeftFill(),
-			$this->addRightFill()
+			$this->addRightFill(),
+			$this->addMap()
 		];
+	}
+
+	private function addMap() {
+		$method = new Method();
+		$method->setName('map');
+		$method->setDescription('It will compare against the first of each pair.
+		if it matches the first part, it will parse the second part use that as the current object
+		If the checkAgainst is the parsed as "*" this is considered the wildcard option, and if no other option matches is used
+		If you put a * anywhere in the string (other than being the entire string) it is parsed as a wildcard, with any characters valid
+		eg: abc*ghi will match abcdefghi, abcghi, and abc123ghi');
+		$method->setReturnType(Method::RETURN_STRING);
+
+		$parameterGrouping = new ParameterGrouping();
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('A string to check against');
+		$parameter = new Parameter();
+		$parameter->setAllowedType(Method::RETURN_STRING);
+		$parameter->setDescription('The string to be translated into');
+		$parameterGrouping->addParameter($parameter);
+
+		$method->addParameter($parameterGrouping);
+
+		$method->setHandler([$this, 'mappableMap']);
+		return $method;
+	}
+
+	/**
+	 * mappableIn
+	 * @return string
+	 */
+	public function mappableMap() {
+		$arguments = func_get_args();
+		$argumentsLength = count($arguments);
+		$wildcard = null;
+		for($i=0;$i<$argumentsLength;$i+=2) {
+			$needle = $arguments[$i];
+			$value = $arguments[$i+1];
+			if($needle=='*') {
+				$wildcard = $value;
+			} elseif($this->mapMatches($needle, $this->getModel()->__toString())) {
+				return $value;
+			}
+		}
+		if(!is_null($wildcard)) {
+			return $wildcard;
+		}
+		//Not found so keep current object
+		return $this->getModel();
+	}
+
+	/**
+	 * mapMatches
+	 * @param string $needle
+	 * @param string $haystack
+	 * @return bool
+	 */
+	private function mapMatches($needle, $haystack) {
+		return fnmatch($needle, $haystack);
 	}
 
 	/**
