@@ -56,6 +56,9 @@ This is a way of providing a mappable interface to specific parts of your code f
     * Parameters
         * trueOption (Optional) defaults to the string of "Yes"
         * falseOption (optional) defaults to the string of "No"
+* not()
+    * Parameters (None)
+    * Converts a true statement to false, and a false to true 
 * toLowerCase()
     * Parameters (None)
     * Converts to a lower case string
