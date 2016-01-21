@@ -280,6 +280,24 @@ class ParseTest extends Root {
 	}
 
 	/**
+	 * testNot_true
+	 * @return void
+	 */
+	public function testNot_true() {
+		$actual = $this->runMapping('"hello".in("hello").not()');
+		$this->assertSame(false, $actual->getValue());
+	}
+
+	/**
+	 * testNot_false
+	 * @return void
+	 */
+	public function testNot_false() {
+		$actual = $this->runMapping('"hello".in("hello").not()');
+		$this->assertSame(true, $actual->getValue());
+	}
+
+	/**
 	 * testIn_valid
 	 * @return void
 	 */

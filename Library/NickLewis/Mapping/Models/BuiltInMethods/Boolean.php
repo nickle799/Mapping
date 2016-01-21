@@ -23,8 +23,36 @@ class Boolean {
 	 */
 	public function addMethods() {
 		return [
-			$this->addIfThen()
+			$this->addIfThen(),
+			$this->addNot()
 		];
+	}
+
+	/**
+	 * addNot
+	 * @return Method
+	 * @throws \Exception
+	 */
+	private function addNot() {
+		$method = new Method();
+		$method->setName('ifThen');
+		$method->setDescription('Converts true to false and false to true');
+		$method->setReturnType(Method::RETURN_BOOLEAN);
+
+		$method->setHandler([$this, 'mappableNot']);
+		return $method;
+	}
+
+	/**
+	 * mappableNot
+	 * @return bool
+	 */
+	public function mappableNot() {
+		if($this->getModel()->getValue()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**
@@ -66,7 +94,6 @@ class Boolean {
 			return $false;
 		}
 	}
-
 
 	/**
 	 * @return BooleanInterface
