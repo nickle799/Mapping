@@ -35,7 +35,7 @@ class Boolean {
 	 */
 	private function addNot() {
 		$method = new Method();
-		$method->setName('ifThen');
+		$method->setName('not');
 		$method->setDescription('Converts true to false and false to true');
 		$method->setReturnType(Method::RETURN_BOOLEAN);
 
