@@ -2,8 +2,11 @@
 namespace NickLewis\Mapping\Models\BuiltInMethods;
 use NickLewis\Mapping\Models\BooleanInterface;
 use NickLewis\Mapping\Models\ObjectInterface;
+use NickLewis\Mapping\Models\StringInterface;
+use NickLewis\Mapping\Services\CatchableException;
 use NickLewis\Mapping\Services\Method;
 use NickLewis\Mapping\Services\Parameter;
+use NickLewis\Mapping\Services\Lexicon\Method as LexiconMethod;
 
 class Boolean {
 	/** @type  BooleanInterface */
@@ -69,12 +72,14 @@ class Boolean {
 		$parameter = new Parameter();
 		$parameter->setAllowedType(Method::RETURN_MIXED);
 		$parameter->setDescription('The true parameter');
+		$parameter->setAsParsable(true);
 		$method->addParameter($parameter);
 
 		$parameter = new Parameter();
 		$parameter->setRequired(false);
 		$parameter->setAllowedType(Method::RETURN_MIXED);
 		$parameter->setDescription('The false parameter');
+		$parameter->setAsParsable(true);
 		$method->addParameter($parameter);
 
 		$method->setHandler([$this, 'mappableIfThen']);
@@ -83,16 +88,18 @@ class Boolean {
 
 	/**
 	 * mappableIfThen
-	 * @param ObjectInterface $true
-	 * @param ObjectInterface $false
+	 * @param LexiconMethod[] $true
+	 * @param LexiconMethod[] $false
 	 * @return ObjectInterface
+	 * @throws CatchableException
 	 */
-	public function mappableIfThen($true, ObjectInterface $false=null) {
+	public function mappableIfThen($true, $false=null) {
 		if($this->getModel()->getValue()) {
-			return $true;
+			$objectInterface = Parameter::parseLexiconParameter($true);
 		} else {
-			return $false;
+			$objectInterface = Parameter::parseLexiconParameter($false);
 		}
+		return $objectInterface;
 	}
 
 	/**

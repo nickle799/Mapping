@@ -6,8 +6,10 @@ use NickLewis\Mapping\Models\Date;
 use NickLewis\Mapping\Models\Map;
 use NickLewis\Mapping\Models\Number;
 use NickLewis\Mapping\Models\ObjectInterface;
+use NickLewis\Mapping\Models\Parsable;
 use NickLewis\Mapping\Models\String;
 use NickLewis\Mapping\Models\StringInterface;
+use NickLewis\Mapping\Services\Lexicon\Parser;
 
 class Parse {
 	/** @var  ObjectInterface */
@@ -36,7 +38,7 @@ class Parse {
 	public static function createParse($currentObject) {
 		if($currentObject instanceof ObjectInterface) {
 			$object = $currentObject;
-		} elseif(is_int($currentObject) || is_float($currentObject) || is_double($currentObject)) {
+		} elseif(is_numeric($currentObject)) {
 			$object = new Number($currentObject);
 		} elseif(is_array($currentObject)) {
 			$object = new Map($currentObject);
@@ -167,7 +169,7 @@ class Parse {
 				continue;
 			}
 			if($char=='(') {
-				/** @type ObjectInterface[] $parameters */
+				/** @type Parsable[] $parameters */
 				$parameters = [];
 				$i++; //Offset for opening parenthesis
 				$subMapping = substr($mapping, $i);
@@ -284,8 +286,20 @@ class Parse {
 	 * @return mixed
 	 */
 	public function parse($mapping) {
-		$this->setOriginalMapping($mapping);
-		return $this->parseInternal($mapping, self::UNTIL_END);
+		$parser = new Parser();
+		$methods = $parser->parse($mapping);
+		foreach($methods as $method) {
+			$currentObject = $this->getOriginalObject();
+			do {
+				$method->setCurrentObject($currentObject);
+				$method->setOriginalObject($this->getOriginalObject());
+				$method->setOriginalMapping($mapping);
+				$currentObject = $method->call();
+				$method = $method->getNextMethod();
+			} while(!is_null($method));
+			$this->addToTotalOutput($currentObject);
+		}
+		return $this->getTotalOutput();
 	}
 
 	/**

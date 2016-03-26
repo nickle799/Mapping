@@ -3,6 +3,9 @@ namespace NickLewis\Mapping\Services;
 
 use InvalidArgumentException;
 use NickLewis\Mapping\Models\ObjectInterface;
+use NickLewis\Mapping\Models\String;
+use NickLewis\Mapping\Models\StringInterface;
+use NickLewis\Mapping\Services\Lexicon\Method as LexiconMethod;
 
 class Method {
 	const RETURN_INT = 'int';
@@ -112,7 +115,7 @@ class Method {
 
 	/**
 	 * handle
-	 * @param array $parameters
+	 * @param LexiconMethod[] $parameters
 	 * @return mixed
 	 */
 	public function handle(array $parameters=[]) {
@@ -127,12 +130,11 @@ class Method {
 
 	/**
 	 * validParameters
-	 * @param array $parameters
+	 * @param LexiconMethod[][] $parameters
 	 * @return array
 	 * @throws CatchableException
 	 */
 	private function validateParameters(array $parameters=[]) {
-
 		$currentParamKey = 0;
 		foreach($this->getParameters() as $mappingParameter) {
 			if($mappingParameter instanceof ParameterGrouping) {

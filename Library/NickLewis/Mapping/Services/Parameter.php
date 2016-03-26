@@ -3,6 +3,10 @@ namespace NickLewis\Mapping\Services;
 use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
 use Bullhorn\FastRest\Api\Services\Date\Date;
 use Bullhorn\FastRest\Api\Services\Date\DateTime;
+use NickLewis\Mapping\Models\ObjectInterface;
+use NickLewis\Mapping\Models\String;
+use NickLewis\Mapping\Models\StringInterface;
+use NickLewis\Mapping\Services\Lexicon\Method as LexiconMethod;
 
 class Parameter extends Root implements ParameterInterface {
 	/** @var bool  */
@@ -11,6 +15,8 @@ class Parameter extends Root implements ParameterInterface {
 	private $description = '';
 	/** @var string */
 	private $allowedType = null;
+	/** @var bool */
+	private $asParsable = false;
 
 	/**
 	 * Constructor
@@ -18,6 +24,24 @@ class Parameter extends Root implements ParameterInterface {
 	 */
 	public function __construct() {
 		$this->setAllowedType(Method::RETURN_STRING);
+	}
+
+	/**
+	 * Getter
+	 * @return boolean
+	 */
+	public function isAsParsable() {
+		return $this->asParsable;
+	}
+
+	/**
+	 * Setter
+	 * @param boolean $asParsable
+	 * @return Parameter
+	 */
+	public function setAsParsable($asParsable) {
+		$this->asParsable = $asParsable;
+		return $this;
 	}
 
 	/**
@@ -76,11 +100,37 @@ class Parameter extends Root implements ParameterInterface {
 	}
 
 	/**
+	 * parseParameter
+	 * @param LexiconMethod[] $parameter
+	 * @return ObjectInterface
+	 * @throws CatchableException
+	 */
+	public static function parseLexiconParameter(array $parameter) {
+		$totalOutput = null;
+		foreach($parameter as $subParameter) {
+			$currentObject = $subParameter->call();
+			if(is_null($totalOutput)) {
+				$totalOutput = $currentObject;
+			} elseif($currentObject instanceof StringInterface || (is_object($currentObject) && method_exists($currentObject, '__toString'))) {
+				$totalOutput = new String($totalOutput . $currentObject);
+			} else {
+				throw new CatchableException('This object: '.get_class($currentObject).' could not be converted to a string');
+			}
+		}
+		return $totalOutput;
+	}
+
+	/**
 	 * validate
-	 * @param string $value
+	 * @param mixed $value
 	 * @return Date|DateTime|bool|float|int
 	 */
 	public function validate($value) {
+		if($this->isAsParsable()) {
+			return $value;
+		} else {
+			$value = self::parseLexiconParameter($value);
+		}
 		switch($this->getAllowedType()) {
 			case Method::RETURN_BOOLEAN:
 				$value = Assert::isBool($value);

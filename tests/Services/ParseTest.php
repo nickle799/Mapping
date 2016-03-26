@@ -294,7 +294,7 @@ class ParseTest extends Root {
 	 * @return void
 	 */
 	public function testNot_false() {
-		$actual = $this->runMapping('"hello".in("hello").not()');
+		$actual = $this->runMapping('"hello0".in("hello").not()');
 		$this->assertSame(true, $actual->getValue());
 	}
 
@@ -314,6 +314,10 @@ class ParseTest extends Root {
 	public function testIfThen_false() {
 		$actual = $this->runMapping('"hello".in("helloWorld").ifThen("itIsTrue","itIsFalse")');
 		$this->assertSame("itIsFalse", $actual->__toString());
+	}
+
+	public function testIfThen_invalidThen() {
+		$this->runMapping('"hello".in("hello").ifThen("itIsTrue",abc("helloworld"))');
 	}
 
 	/**
@@ -376,7 +380,7 @@ class ParseTest extends Root {
 	 * testLeftFill_noParameters
 	 * @return void
 	 * @expectedException \NickLewis\Mapping\Services\CatchableException
-	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: leftFill (Offset: 25) with full mapping "hello".leftFill("10","")
+	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: leftFill (Offset: 24) with full mapping "hello".leftFill("10","")
 	 */
 	public function testLeftFill_emptyFillString() {
 		$this->runMapping('"hello".leftFill("10","")');
@@ -414,7 +418,7 @@ class ParseTest extends Root {
 	 * testRightFill_noParameters
 	 * @return void
 	 * @expectedException \NickLewis\Mapping\Services\CatchableException
-	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: rightFill (Offset: 26) with full mapping "hello".rightFill("10","")
+	 * @expectedExceptionMessage Invalid Mapping: Fill String Cannot be empty looking at: rightFill (Offset: 25) with full mapping "hello".rightFill("10","")
 	 */
 	public function testRightFill_emptyFillString() {
 		$this->runMapping('"hello".rightFill("10","")');
