@@ -1,6 +1,8 @@
 <?php
 namespace NickLewis\Mapping\Models;
 
+use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
+
 class String extends Root implements StringInterface {
 	/** @type  string */
 	private $value;
@@ -10,6 +12,7 @@ class String extends Root implements StringInterface {
 	 * @param string $value
 	 */
 	public function __construct($value) {
+		$value = Assert::isString($value);
 		$this->setValue($value);
 	}
 

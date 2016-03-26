@@ -3,6 +3,7 @@ namespace NickLewis\Mapping\Services;
 use Bullhorn\FastRest\Api\Services\DataValidation\Assert;
 use NickLewis\Mapping\Models\Boolean;
 use NickLewis\Mapping\Models\Date;
+use NickLewis\Mapping\Models\Map;
 use NickLewis\Mapping\Models\Number;
 use NickLewis\Mapping\Models\ObjectInterface;
 use NickLewis\Mapping\Models\String;
@@ -25,6 +26,26 @@ class Parse {
 	 */
 	public function __construct(ObjectInterface $currentObject) {
 		$this->setOriginalObject($currentObject);
+	}
+
+	/**
+	 * createParse
+	 * @param mixed $currentObject
+	 * @return Parse
+	 */
+	public static function createParse($currentObject) {
+		if($currentObject instanceof ObjectInterface) {
+			$object = $currentObject;
+		} elseif(is_int($currentObject) || is_float($currentObject) || is_double($currentObject)) {
+			$object = new Number($currentObject);
+		} elseif(is_array($currentObject)) {
+			$object = new Map($currentObject);
+		} elseif(is_bool($currentObject)) {
+			$object = new Boolean($currentObject);
+		} else {
+			$object = new String($currentObject);
+		}
+		return new self($object);
 	}
 
 	/**
@@ -247,6 +268,8 @@ class Parse {
 					return new Date($returnVar);
 				} elseif($mappableField->getReturnType()==Method::RETURN_BOOLEAN) {
 					return new Boolean($returnVar);
+				} elseif($mappableField->getReturnType()==Method::RETURN_MAP) {
+					return new Map($returnVar);
 				} else {
 					throw new \Exception('To Implement: '.$mappableField->getReturnType());
 				}

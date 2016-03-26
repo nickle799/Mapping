@@ -1,5 +1,6 @@
 <?php
 namespace Tests\Services\Parse;
+use NickLewis\Mapping\Models\Map;
 use NickLewis\Mapping\Models\ObjectInterface;
 use NickLewis\Mapping\Services\Parse;
 use PHPUnit_Framework_MockObject_MockObject;
@@ -518,6 +519,18 @@ class ParseTest extends Root {
 	public function testMap_wildPartOfString() {
 		$actual = $this->runMapping('"hello world".map("*","sweet","*el* wor*","goodbye")');
 		$this->assertEquals('goodbye', $actual->__toString());
+	}
+
+	public function testLength() {
+		$parse = new Parse(new Map(['abc','def']));
+		$actual = $parse->parse('count()');
+		$this->assertEquals(2, $actual->getValue());
+	}
+
+	public function testFilter() {
+		$parse = new Parse(new Map(['abc','def','abc']));
+		$actual = $parse->parse('filter("in(\"abc\")").count()');
+		$this->assertEquals(2, $actual->getValue());
 	}
 
 }
