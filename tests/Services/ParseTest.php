@@ -533,8 +533,14 @@ class ParseTest extends Root {
 
 	public function testFilter() {
 		$parse = new Parse(new Map(['abc','def','abc']));
-		$actual = $parse->parse('filter("in(\"abc\")").count()');
+		$actual = $parse->parse('filter(in("abc")).count()');
 		$this->assertEquals(2, $actual->getValue());
+	}
+
+	public function testItemAt() {
+		$parse = new Parse(new Map(['abc','def','abc']));
+		$actual = $parse->parse('itemAt("1")');
+		$this->assertEquals("def", $actual->getValue());
 	}
 
 }

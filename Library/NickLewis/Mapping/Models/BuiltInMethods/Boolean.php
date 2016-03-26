@@ -95,9 +95,9 @@ class Boolean {
 	 */
 	public function mappableIfThen($true, $false=null) {
 		if($this->getModel()->getValue()) {
-			$objectInterface = Parameter::parseLexiconParameter($true);
+			$objectInterface = Parameter::parseLexiconParameter($true, true);
 		} else {
-			$objectInterface = Parameter::parseLexiconParameter($false);
+			$objectInterface = Parameter::parseLexiconParameter($false, true);
 		}
 		return $objectInterface;
 	}

@@ -101,20 +101,15 @@ This is a way of providing a mappable interface to specific parts of your code f
         * comparison (Required) 
         * There must be at least one
     * Returns a boolean that can then be piped into .ifThen
-
-## TODO
-
 * count()
     * Parameters (None)
     * Returns the size of an array if the current object is an array
+* filter(in("abc"))
+    * Parameters
+        * A sub parse to be ran on each value of the array
+    * Filters a list to be a smaller subset of those that pass the requirements
 * itemAt("1")
     * Parameters
         * index (Required)
     * Gets an item at a specified index if the current object is an array
     * Index starts at 0
-* subObject()
-    * Parameters (None)
-    * This gets the object that was current when passing in to the current method
-        * This only works if you are inside a method
-    * eg: computer.room.computers.itemAt(subObject().length().minus("1"))
-        * This will get you the last computer in the array of computers in the current room

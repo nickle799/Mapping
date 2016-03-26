@@ -7,6 +7,27 @@ use NickLewis\Mapping\Models\BuiltInMethods\Map as BuiltInMap;
 use NickLewis\Mapping\Services\Method;
 
 abstract class Root implements ObjectInterface {
+
+	/**
+	 * createParse
+	 * @param mixed $currentObject
+	 * @return ObjectInterface
+	 */
+	public static function createObject($currentObject) {
+		if($currentObject instanceof ObjectInterface) {
+			$object = $currentObject;
+		} elseif(is_numeric($currentObject)) {
+			$object = new Number($currentObject);
+		} elseif(is_array($currentObject)) {
+			$object = new Map($currentObject);
+		} elseif(is_bool($currentObject)) {
+			$object = new Boolean($currentObject);
+		} else {
+			$object = new String($currentObject);
+		}
+		return $object;
+	}
+
 	/**
 	 * getStringMethods
 	 * @return Method[]

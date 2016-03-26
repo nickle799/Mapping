@@ -6,6 +6,7 @@ use NickLewis\Mapping\Models\Date;
 use NickLewis\Mapping\Models\Map;
 use NickLewis\Mapping\Models\Number;
 use NickLewis\Mapping\Models\ObjectInterface;
+use NickLewis\Mapping\Models\Root;
 use NickLewis\Mapping\Models\String;
 use NickLewis\Mapping\Services\CatchableException;
 use NickLewis\Mapping\Services\Method as ParseMethod;
@@ -188,14 +189,22 @@ class Method {
         return $this;
     }
 
-    public function call() {
+    /**
+     * call
+     * @param bool|false $useOriginalObject
+     * @return Boolean|Map|Number|ObjectInterface|String
+     * @throws CatchableException
+     * @throws \Exception
+     */
+    public function call($useOriginalObject=false) {
         if($this->getName() instanceof RawValue) {
             return $this->getName()->getValue();
         } else {
+            $currentObject = $useOriginalObject?$this->getOriginalObject():$this->getCurrentObject();
             if($this->getName()=='') {
-                return $this->getCurrentObject();
+                return $currentObject;
             }
-            $mappableFields = $this->getCurrentObject()->getMappableFields();
+            $mappableFields = $currentObject->getMappableFields();
             Assert::isArray($mappableFields);
             $validMappings = [];
             foreach($mappableFields as $mappableField) {
@@ -218,6 +227,8 @@ class Method {
                         return new Boolean($returnVar);
                     } elseif($mappableField->getReturnType()==ParseMethod::RETURN_MAP) {
                         return new Map($returnVar);
+                    } elseif($mappableField->getReturnType()==ParseMethod::RETURN_MIXED) {
+                        return Root::createObject($returnVar);
                     } else {
                         throw new \Exception('To Implement: '.$mappableField->getReturnType());
                     }

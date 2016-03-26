@@ -31,26 +31,6 @@ class Parse {
 	}
 
 	/**
-	 * createParse
-	 * @param mixed $currentObject
-	 * @return Parse
-	 */
-	public static function createParse($currentObject) {
-		if($currentObject instanceof ObjectInterface) {
-			$object = $currentObject;
-		} elseif(is_numeric($currentObject)) {
-			$object = new Number($currentObject);
-		} elseif(is_array($currentObject)) {
-			$object = new Map($currentObject);
-		} elseif(is_bool($currentObject)) {
-			$object = new Boolean($currentObject);
-		} else {
-			$object = new String($currentObject);
-		}
-		return new self($object);
-	}
-
-	/**
 	 * Getter
 	 * @return int
 	 */

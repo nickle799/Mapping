@@ -101,14 +101,20 @@ class Parameter extends Root implements ParameterInterface {
 
 	/**
 	 * parseParameter
-	 * @param LexiconMethod[] $parameter
+	 * @param LexiconMethod[]      $parameter
+	 * @param boolean              $useOriginalObject
+	 * @param ObjectInterface|null $currentObject
 	 * @return ObjectInterface
 	 * @throws CatchableException
 	 */
-	public static function parseLexiconParameter(array $parameter) {
+	public static function parseLexiconParameter(array $parameter, $useOriginalObject=false, $currentObject=null) {
+		$passedCurrentObject = $currentObject;
 		$totalOutput = null;
 		foreach($parameter as $subParameter) {
-			$currentObject = $subParameter->call();
+			if(!is_null($passedCurrentObject)) {
+				$subParameter->setCurrentObject($passedCurrentObject);
+			}
+			$currentObject = $subParameter->call($useOriginalObject);
 			if(is_null($totalOutput)) {
 				$totalOutput = $currentObject;
 			} elseif($currentObject instanceof StringInterface || (is_object($currentObject) && method_exists($currentObject, '__toString'))) {
