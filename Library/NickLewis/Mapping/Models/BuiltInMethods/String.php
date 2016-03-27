@@ -1,5 +1,6 @@
 <?php
 namespace NickLewis\Mapping\Models\BuiltInMethods;
+use NickLewis\Mapping\Models\Date as ModelDate;
 use NickLewis\Mapping\Models\StringInterface;
 use NickLewis\Mapping\Services\CatchableException;
 use NickLewis\Mapping\Services\Method;
@@ -236,6 +237,11 @@ class String {
 	 * @return string
 	 */
 	public function mappableDate($format) {
+		if($this->getModel() instanceof ModelDate) {
+			/** @var ModelDate $model */
+			$model = $this->getModel();
+			return $model->getValue()->format($format);
+		}
 		return date($format, strtotime($this->getModel()->__toString()));
 	}
 
